@@ -4,6 +4,7 @@
     clippy::redundant_closure,
     clippy::useless_conversion,
     clippy::unit_arg,
+    clippy::double_parens,
     non_snake_case
 )]
 // AUTO GENERATED FILE, DO NOT EDIT.
@@ -40,7 +41,23 @@ pub extern "C" fn wire_rust_release_mode(port_: i64) {
     )
 }
 
+#[no_mangle]
+pub extern "C" fn wire_test(port_: i64) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap(
+        WrapInfo {
+            debug_name: "test",
+            port: Some(port_),
+            mode: FfiCallMode::Normal,
+        },
+        move || move |task_callback| Ok(test()),
+    )
+}
+
 // Section: wire structs
+
+// Section: wrapper structs
+
+// Section: static checks
 
 // Section: allocate functions
 
@@ -92,6 +109,23 @@ impl support::IntoDart for Platform {
         .into_dart()
     }
 }
+
+impl support::IntoDart for Test {
+    fn into_dart(self) -> support::DartCObject {
+        vec![
+            self.uu8.into_dart(),
+            self.uu16.into_dart(),
+            self.uu32.into_dart(),
+            self.uu64.into_dart(),
+            self.ii8.into_dart(),
+            self.ii16.into_dart(),
+            self.ii32.into_dart(),
+            self.ii64.into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for Test {}
 
 // Section: executor
 

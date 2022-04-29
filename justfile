@@ -3,7 +3,7 @@
 llvm_path := if os() == "macos" {
     "--llvm-path /opt/homebrew/opt/llvm"
 } else {
-    ""
+    "--llvm-path /usr/lib/llvm-14"
 }
 
 default: gen lint

@@ -57,3 +57,27 @@ pub fn platform() -> Platform {
 pub fn rust_release_mode() -> bool {
     cfg!(not(debug_assertions))
 }
+
+pub struct Test {
+    pub uu8: u8,
+    pub uu16: u16,
+    pub uu32: u32,
+    pub uu64: u64,
+    pub ii8: i8,
+    pub ii16: i16,
+    pub ii32: i32,
+    pub ii64: i64,
+}
+
+pub fn test() -> Test {
+    Test {
+        uu8: 0,
+        uu16: 0,
+        uu32: 0,
+        uu64: 0,
+        ii8: 0,
+        ii16: 0,
+        ii32: 0,
+        ii64: 0,
+    }
+}
