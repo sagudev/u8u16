@@ -2,6 +2,9 @@
 // When adding new code to your project, note that only items used
 // here will be transformed to their Dart equivalents.
 
+use flutter_rust_bridge::frb;
+pub use lol::Lol;
+
 // A plain enum without any fields. This is similar to Dart- or C-style enums.
 // flutter_rust_bridge is capable of generating code for enums with fields
 // (@freezed classes in Dart and tagged unions in C).
@@ -58,26 +61,23 @@ pub fn rust_release_mode() -> bool {
     cfg!(not(debug_assertions))
 }
 
-pub struct Test {
-    pub uu8: u8,
-    pub uu16: u16,
-    pub uu32: u32,
-    pub uu64: u64,
-    pub ii8: i8,
-    pub ii16: i16,
-    pub ii32: i32,
-    pub ii64: i64,
+// Lol and A struct are same
+pub struct A {
+    pub num: i64,
+    pub s: String,
 }
 
-pub fn test() -> Test {
-    Test {
-        uu8: 0,
-        uu16: 0,
-        uu32: 0,
-        uu64: 0,
-        ii8: 0,
-        ii16: 0,
-        ii32: 0,
-        ii64: 0,
-    }
+#[frb(mirror(Lol))]
+pub struct _Lol {
+    pub num: i64,
+    pub s: String,
+}
+
+pub struct C {
+    pub a: Option<A>,
+    pub lol: Option<Lol>,
+}
+
+pub fn test() -> anyhow::Result<C> {
+    Ok(C { a: None, lol: None })
 }

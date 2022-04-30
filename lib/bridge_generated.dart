@@ -16,7 +16,37 @@ abstract class Native {
 
   Future<bool> rustReleaseMode({dynamic hint});
 
-  Future<Test> test({dynamic hint});
+  Future<C> test({dynamic hint});
+}
+
+class A {
+  final int num;
+  final String s;
+
+  A({
+    required this.num,
+    required this.s,
+  });
+}
+
+class C {
+  final A? a;
+  final Lol? lol;
+
+  C({
+    this.a,
+    this.lol,
+  });
+}
+
+class Lol {
+  final int num;
+  final String s;
+
+  Lol({
+    required this.num,
+    required this.s,
+  });
 }
 
 enum Platform {
@@ -28,28 +58,6 @@ enum Platform {
   MacIntel,
   MacApple,
   Wasm,
-}
-
-class Test {
-  final int uu8;
-  final int uu16;
-  final int uu32;
-  final int uu64;
-  final int ii8;
-  final int ii16;
-  final int ii32;
-  final int ii64;
-
-  Test({
-    required this.uu8,
-    required this.uu16,
-    required this.uu32,
-    required this.uu64,
-    required this.ii8,
-    required this.ii16,
-    required this.ii32,
-    required this.ii64,
-  });
 }
 
 class NativeImpl extends FlutterRustBridgeBase<NativeWire> implements Native {
@@ -82,9 +90,9 @@ class NativeImpl extends FlutterRustBridgeBase<NativeWire> implements Native {
         hint: hint,
       ));
 
-  Future<Test> test({dynamic hint}) => executeNormal(FlutterRustBridgeTask(
+  Future<C> test({dynamic hint}) => executeNormal(FlutterRustBridgeTask(
         callFfi: (port_) => inner.wire_test(port_),
-        parseSuccessData: _wire2api_test,
+        parseSuccessData: _wire2api_c,
         constMeta: const FlutterRustBridgeTaskConstMeta(
           debugName: "test",
           argNames: [],
@@ -100,60 +108,74 @@ class NativeImpl extends FlutterRustBridgeBase<NativeWire> implements Native {
 }
 
 // Section: wire2api
+String _wire2api_String(dynamic raw) {
+  return raw as String;
+}
+
+A _wire2api_a(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 2)
+    throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+  return A(
+    num: _wire2api_i64(arr[0]),
+    s: _wire2api_String(arr[1]),
+  );
+}
+
 bool _wire2api_bool(dynamic raw) {
   return raw as bool;
 }
 
-int _wire2api_i16(dynamic raw) {
-  return raw as int;
+A _wire2api_box_autoadd_a(dynamic raw) {
+  return _wire2api_a(raw);
 }
 
-int _wire2api_i32(dynamic raw) {
-  return raw as int;
+Lol _wire2api_box_autoadd_lol(dynamic raw) {
+  return _wire2api_lol(raw);
+}
+
+C _wire2api_c(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 2)
+    throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+  return C(
+    a: _wire2api_opt_box_autoadd_a(arr[0]),
+    lol: _wire2api_opt_box_autoadd_lol(arr[1]),
+  );
 }
 
 int _wire2api_i64(dynamic raw) {
   return raw as int;
 }
 
-int _wire2api_i8(dynamic raw) {
-  return raw as int;
+Lol _wire2api_lol(dynamic raw) {
+  final arr = raw as List<dynamic>;
+  if (arr.length != 2)
+    throw Exception('unexpected arr length: expect 2 but see ${arr.length}');
+  return Lol(
+    num: _wire2api_i64(arr[0]),
+    s: _wire2api_String(arr[1]),
+  );
+}
+
+A? _wire2api_opt_box_autoadd_a(dynamic raw) {
+  return raw == null ? null : _wire2api_box_autoadd_a(raw);
+}
+
+Lol? _wire2api_opt_box_autoadd_lol(dynamic raw) {
+  return raw == null ? null : _wire2api_box_autoadd_lol(raw);
 }
 
 Platform _wire2api_platform(dynamic raw) {
   return Platform.values[raw];
 }
 
-Test _wire2api_test(dynamic raw) {
-  final arr = raw as List<dynamic>;
-  if (arr.length != 8)
-    throw Exception('unexpected arr length: expect 8 but see ${arr.length}');
-  return Test(
-    uu8: _wire2api_u8(arr[0]),
-    uu16: _wire2api_u16(arr[1]),
-    uu32: _wire2api_u32(arr[2]),
-    uu64: _wire2api_u64(arr[3]),
-    ii8: _wire2api_i8(arr[4]),
-    ii16: _wire2api_i16(arr[5]),
-    ii32: _wire2api_i32(arr[6]),
-    ii64: _wire2api_i64(arr[7]),
-  );
-}
-
-int _wire2api_u16(dynamic raw) {
-  return raw as int;
-}
-
-int _wire2api_u32(dynamic raw) {
-  return raw as int;
-}
-
-int _wire2api_u64(dynamic raw) {
-  return raw as int;
-}
-
 int _wire2api_u8(dynamic raw) {
   return raw as int;
+}
+
+Uint8List _wire2api_uint_8_list(dynamic raw) {
+  return raw as Uint8List;
 }
 
 // ignore_for_file: camel_case_types, non_constant_identifier_names, avoid_positional_boolean_parameters, annotate_overrides, constant_identifier_names

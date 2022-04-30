@@ -49,7 +49,7 @@ pub extern "C" fn wire_test(port_: i64) {
             port: Some(port_),
             mode: FfiCallMode::Normal,
         },
-        move || move |task_callback| Ok(test()),
+        move || move |task_callback| test(),
     )
 }
 
@@ -57,8 +57,16 @@ pub extern "C" fn wire_test(port_: i64) {
 
 // Section: wrapper structs
 
+#[derive(Clone)]
+struct mirror_Lol(Lol);
+
 // Section: static checks
 
+const _: fn() = || {
+    let Lol = None::<Lol>.unwrap();
+    let _: i64 = Lol.num;
+    let _: String = Lol.s;
+};
 // Section: allocate functions
 
 // Section: impl Wire2Api
@@ -94,6 +102,31 @@ impl<T> NewWithNullPtr for *mut T {
 
 // Section: impl IntoDart
 
+impl support::IntoDart for A {
+    fn into_dart(self) -> support::DartCObject {
+        vec![self.num.into_dart(), self.s.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for A {}
+
+impl support::IntoDart for C {
+    fn into_dart(self) -> support::DartCObject {
+        vec![
+            self.a.into_dart(),
+            self.lol.map(|v| mirror_Lol((*v))).into_dart(),
+        ]
+        .into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for C {}
+
+impl support::IntoDart for mirror_Lol {
+    fn into_dart(self) -> support::DartCObject {
+        vec![self.0.num.into_dart(), self.0.s.into_dart()].into_dart()
+    }
+}
+impl support::IntoDartExceptPrimitive for mirror_Lol {}
+
 impl support::IntoDart for Platform {
     fn into_dart(self) -> support::DartCObject {
         match self {
@@ -109,23 +142,6 @@ impl support::IntoDart for Platform {
         .into_dart()
     }
 }
-
-impl support::IntoDart for Test {
-    fn into_dart(self) -> support::DartCObject {
-        vec![
-            self.uu8.into_dart(),
-            self.uu16.into_dart(),
-            self.uu32.into_dart(),
-            self.uu64.into_dart(),
-            self.ii8.into_dart(),
-            self.ii16.into_dart(),
-            self.ii32.into_dart(),
-            self.ii64.into_dart(),
-        ]
-        .into_dart()
-    }
-}
-impl support::IntoDartExceptPrimitive for Test {}
 
 // Section: executor
 
